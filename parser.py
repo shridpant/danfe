@@ -3,14 +3,18 @@
 import os
 import re
 import json
-import datetime
+import csv
+from datetime import datetime
 import subprocess
 
 def init():
+	global filePath
 	global logPath
-	now = datetime.datetime.now()
-	logPath = "log/" + str(now) + ".txt"
-	subprocess.Popen(["touch", logPath], stdout=subprocess.PIPE)
+	rootPath = os.getcwd()
+	filePath = rootPath + "/sample-files/" + "sample.csv"
+	now = datetime.now()
+	logPath = rootPath + "/log/" + now.strftime("%Y-%m-%m-%H-%M") + ".txt"
+	subprocess.Popen(["touch", logPath], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
 def logger(message1, message2 = None, message3 = None):
 	with open(logPath, "a") as logFile:
@@ -18,7 +22,7 @@ def logger(message1, message2 = None, message3 = None):
 
 def fileExistence():
 	if os.path.exists(filePath):
-		logger("File Exists", filePath)
+		logger("File Exists at " + filePath)
 		return True
 	else:
 		logger("File doesn't exist")
@@ -30,8 +34,16 @@ def fileParser(fileType):
 		fileToOpen = open(filePath, 'r')
 		fileContents = fileToOpen.read()
 		if fileType == "json":
+			fileContents = fileToOpen.read()
 			parsedFile = json.loads(fileContents)
+		elif fileType == "csv": #todo
+			fileContents = csv.DictReader(fileToOpen)
+			print(fileContents)
+			for row in fileContents:
+				for column, value in row.items():
+					parsedFile.setdefault(column, []).append(value)
 		else:
+			fileContents = fileToOpen.read()
 			configRegX = re.compile(r"\*\..+=.+")
 			for match in configRegX.finditer(fileContents):
 		            keyParameter = match.group().split('=')[0].lstrip('*\.')
@@ -40,16 +52,12 @@ def fileParser(fileType):
 		return parsedFile
 	else:
 		logger("Error")
-		print("Error")
 		return None
+
 # INIT global/main variables
 init()
-rootPath="/home/shrid/Documents/bash-parsers/sample-files/"
-filePath = rootPath + "sample.json"
 # calling the parsing function
-parsedFile = fileParser("json")
-# displaying the output
+parsedFile = fileParser("csv")
+# display the output
 logger(parsedFile)
 print(parsedFile)
-
-
