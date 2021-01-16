@@ -1,2 +1,0 @@
-File Exists at /home/shrid/Documents/bash-parsers/sample-files/sample.csv
-{}

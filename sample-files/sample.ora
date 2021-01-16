@@ -1,0 +1,30 @@
+cdb1.__data_transfer_cache_size=0
+cdb1.__db_cache_size=251658240
+cdb1.__java_pool_size=4194304
+cdb1.__large_pool_size=4194304
+cdb1.__oracle_base='/u01/app/oracle'#ORACLE_BASE set from environment
+cdb1.__pga_aggregate_target=167772160
+cdb1.__sga_target=503316480
+cdb1.__shared_io_pool_size=20971520
+cdb1.__shared_pool_size=209715200
+cdb1.__streams_pool_size=0
+*.audit_file_dest='/u01/app/oracle/admin/cdb1/adump'
+*.audit_trail='db'
+*.compatible='12.1.0.0.0'
+*.control_files='/u01/app/oracl
+e/oradata/cdb1/control01.ctl','/u01/app/oracle/fast_recovery_area/cdb1/control02.ctl'
+*.db_block_size=8192
+*.db_domain=''
+*.db_name='cdb1'
+*.db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+*.db_recovery_file_dest_size=4800m
+*.diagnostic_dest='/u01/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=cdb1XDB)'
+*.enable_pluggable_database=true
+*.open_cursors=300
+*.pga_aggregate_target=160m
+*.processes=300
+*.remote_login_passwordfile='EXCLUSIVE'
+*.sga_target=480m
+*.undo_tablesp
+ace='UNDOTBS1'
