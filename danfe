@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+# Danfe- One stop solution to all your file transformation needs!
+# Copyright (C) 2020-2021  Shrid Pant
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>
+
+import os
+import sys
+import argparse
+import subprocess
+from src.danfe import Danfe
+from src.logger import Logger
+from src.utils.utils import ErrorHandler, Save
+
+def main():
+    file_path, verbose, convert_to, save_location = parse_arguments()
+    danfe_logger = Logger(verbose)
+    file_object = Danfe(file_path, danfe_logger)
+    result = convert_file(file_object, convert_to, danfe_logger)
+    if save_location:
+        danfe_save = Save(result, save_location, convert_to, danfe_logger)
+        danfe_save.save()
+    input(">> Press any key to continue ...")
+
+def convert_file(file_to_convert, convert_to, logger):
+    if convert_to == "list":
+        converted_file = file_to_convert.to_list()
+    elif convert_to == "dict":
+        converted_file = file_to_convert.to_dict()
+    else:
+        logger.log("Unknown file option", 400)
+        converted_file = None
+    return converted_file
+
+def parse_arguments():
+    PARSER = argparse.ArgumentParser(
+        description='Transform files from the command line.',
+        epilog="danfe allows transformation of data/files to and from json, csv, list and dictionary.")
+    PARSER.add_argument("-v", "--verbose", help="enable verbose", action="store_true")
+    PARSER.add_argument("-s", "--save", metavar="LOCATION", help="location to save the output")
+    PARSER.add_argument("filename", metavar="FILENAME", help="absolute or relative path to the argument file")
+    PARSER.add_argument("-t", "--target", choices = ["list", "dict", "json", "csv"], required=True, help="target file format or data structure to convert to")
+    ARGV = PARSER.parse_args()
+    if not os.path.isabs(ARGV.filename):
+        ARGV.filename = os.getcwd() + "/" + ARGV.filename
+    if ARGV.save and not os.path.isabs(ARGV.save):
+        ARGV.save = os.getcwd()
+        if ARGV.save == ".":
+            ARGV.save +=  "/" + ARGV.save
+    return ARGV.filename, ARGV.verbose, ARGV.target, ARGV.save
+
+if __name__ == '__main__' :
+    try:
+        main()
+    except ErrorHandler as e:
+        print(e)
