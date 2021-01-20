@@ -56,9 +56,10 @@ def parse_arguments():
     if not os.path.isabs(ARGV.filename):
         ARGV.filename = os.getcwd() + "/" + ARGV.filename
     if ARGV.save and not os.path.isabs(ARGV.save):
-        ARGV.save = os.getcwd()
-        if ARGV.save == ".":
-            ARGV.save +=  "/" + ARGV.save
+        if ARGV.save != ".":
+            ARGV.save = os.getcwd() +  "/" + ARGV.save
+        else:
+            ARGV.save = os.getcwd()
     return ARGV.filename, ARGV.verbose, ARGV.target, ARGV.save
 
 if __name__ == '__main__' :
