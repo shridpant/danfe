@@ -14,23 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import os
-import json, csv, re
+import csv, json, re, ast, pickle
 
-class ToDict():
+class ToJSON():
     def __init__(self, file_path, file_extension, logger):
         self.file_path = file_path
         self.file_extension = file_extension
         self.logger = logger
-        self.logger.log("Inside toDict.py")
+        self.logger.log("Inside toJSON.py")
 
     def convert(self):
         converted_file = {}
         with open(self.file_path,'r') as file_to_open:
-            if self.file_extension == "json":
-                file_contents = file_to_open.read()
-                converted_file = json.loads(file_contents)
-            elif self.file_extension == "csv":
+            if self.file_extension == "csv":
                 file_contents = csv.DictReader(file_to_open)
                 counter = 0
                 for row in file_contents:
@@ -39,6 +35,7 @@ class ToDict():
                         each_row[key] = value
                     converted_file[counter] = each_row
                     counter += 1
+                converted_file = json.dumps(converted_file)
             elif self.file_extension == "ora":
                 file_contents = file_to_open.read()
                 configRegX = re.compile(r"\*\..+=.+")
@@ -46,26 +43,37 @@ class ToDict():
                     key_parameter = match.group().split('=')[0].lstrip('*\.')
                     value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
                     converted_file[key_parameter] =  value_parameter
+            elif self.file_extension == "json":
+                converted_file = json.load(file_to_open)
             else:
                 file_contents = file_to_open.read()
-                if isinstance(file_contents, list):
+                print(file_contents)
+                if isinstance(file_contents, dict):
+                    counter = 0
+                    for row in file_contents:
+                        each_row = {}
+                        for key, value in row.items():
+                            each_row[key] = value
+                        converted_file[counter] = each_row
+                        counter += 1
+                    converted_file = json.dumps(converted_file)
+                elif isinstance(file_contents, list):
                     converted_file = self.convert_helper(file_contents)
-                elif isinstance(file_contents, dict):
-                    converted_file = file_contents
                 else:
                     self.logger.log("Unsupported file type", 400)
                     return None
         return converted_file
 
     def convert_helper(self, data_structure):
-        result_dict = {}
+        result_json = {}
         if isinstance(data_structure, list):
             try:
                 for key, value in list:
                     if isinstance(value, list):
                         value = self.convert_helper(value)
-                    result_dict[key] = value
+                    result_json[key] = value
+                result_json = json.dumps(result_json)
             except:
                 self.logger.log("List values aren't in pairs", 500)
                 return None
-        return result_dict
+        return result_json

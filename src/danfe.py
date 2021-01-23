@@ -17,6 +17,7 @@
 import os
 from src.convert.toList import ToList
 from src.convert.toDict import ToDict
+from src.convert.toJSON import ToJSON
 
 class Danfe():
 	def __init__(self, file_path, logger):
@@ -52,6 +53,18 @@ class Danfe():
 		if self.file_existence():
 			convert_to_dict = ToDict(self.file_path, self.file_extension, self.logger)
 			converted_file = convert_to_dict.convert()
+			if not converted_file:
+				self.logger.log("Dictionary conversion failed", 500)
+			self.logger.log(converted_file, display=True)
+			return converted_file
+		else:
+			self.logger.log("File couldn't be read", 400)
+			return None
+
+	def to_JSON(self):
+		if self.file_existence():
+			convert_to_JSON = ToJSON(self.file_path, self.file_extension, self.logger)
+			converted_file = convert_to_JSON.convert()
 			if not converted_file:
 				self.logger.log("Dictionary conversion failed", 500)
 			self.logger.log(converted_file, display=True)

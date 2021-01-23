@@ -39,6 +39,8 @@ def convert_file(file_to_convert, convert_to, logger):
         converted_file = file_to_convert.to_list()
     elif convert_to == "dict":
         converted_file = file_to_convert.to_dict()
+    elif convert_to.upper() == "JSON":
+        converted_file = file_to_convert.to_JSON()
     else:
         logger.log("Unknown file option", 400)
         converted_file = None
