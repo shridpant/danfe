@@ -3,7 +3,7 @@
 <p align="center">
     <img src="assets/logo.png" width=25%><br />
     One stop solution to all your file transformation needs!
-</p><hr />
+</p>
 
 ## Table of Contents
 
@@ -28,14 +28,17 @@
 2. Add `danfe` to your PATH as:
     a. Temporary: Write `export PATH=$PATH:/path/to/danfe` to terminal.
     b. Permanent: Append `export PATH=$PATH:/path/to/danfe` to the end of your `~/.bashrc` file. Finally, type `source ~/.bashrc`.
-3. And you're all set!
+3. And you're all set! <br />
 ==== EXTRA ====
-4. (Additionally) Please check that you have the necessary permissions on your computer before running the program. 
-5. (Additionally) If not already, make `danfe` executable by running `chmod +x danfe` in the root directory of `danfe`.
+4. _(Additionally)_ Please check that you have the necessary permissions on your computer before running the program. 
+5. _(Additionally)_ If not already done, make `danfe` executable by running `chmod +x danfe` in the root directory of `danfe`.
 
 Note: `danfe` requires Python 3 to run. No external dependencies are required, however.
 
 ## Execution
+
+* **Inputs:** In its present form, `danfe` can take .json, .csv and .ora files are inputs. Besides that, `danfe` is able to read some data structures (lists and dictionaries) provided as inputs through an extension-less file. Learn more about the inputs on the [wiki]().
+* **Outputs:** By default, `danfe` only prints the output to the command-line. Exercising the `-s LOCATION` option should allow the users to save the output _as any file type, to any location_. To save to the current location, just append `-s .` to your command. Learn more about the outputs on the [wiki]().
 
 <p>
 <img src="assets/help.gif">
@@ -43,31 +46,32 @@ Note: `danfe` requires Python 3 to run. No external dependencies are required, h
 
 ### Standalone 
 
-The command-line interface is simple and powerful. Transform your files with simple commands, and perform _get_ or _save_ operations to the output. Usage:
+The command-line interface is simple and powerful. Transform your files with simple commands and perform _get_ and/or _save_ operations to the output. Usage:
 
 `danfe [-h] [-v] [-s LOCATION] -t {list,dict,json,csv} FILENAME`
 
-**positional arguments:** <br />
+**required arguments:** <br />
 `FILENAME` _absolute or relative path to the argument file_<br />
+`-t {list,dict,json,csv}, --target {list,dict,json,csv}` _target file format or data structure to convert to_ <br />s
 **optional arguments:** <br />
 `-h, --help` _show this help message and exit_ <br />
+`--version` _show program's version number and exit_ <br />
 `-v, --verbose` _enable verbose_ <br />
 `-s LOCATION, --save LOCATION` _absolute or relative path to save the output_ <br />
-`-t {list,dict,json,csv}, --target {list,dict,json,csv}` _target file format or data structure to convert to_ <br />
 
 ### Plug and Play
 
-The source code of `danfe` is highly modularized, and, thus, supports _plug and play_. Various parts of `danfe` may be separately reused for specific needs. Head over to [src/convert](src/convert/) to find the relevant conversion programs for your specific use cases.
+The source code of `danfe` is highly modularized and, thus, supports _plug and play_. Various parts of `danfe` may be separately reused for specific needs. Head over to [src/convert](src/convert/) to find the relevant conversion programs for your specific use cases.
 
 ## Examples
 
-Example 1: To simply display the output on the command-line.
+_Example 1:_ To simply display the output on the command-line.
 
 <p>
 <img src="assets/display_output.gif">
 </p>
 
-Example 2: To save the output to the current directory you're in.
+_Example 2:_ To save the output to the current directory you're in.
 
 <p>
 <img src="assets/save_output.gif">
@@ -77,11 +81,11 @@ Note: In any case, the logs are stored in a temporary directory. The location of
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Feel free to fork this repository or submit your ideas through [issues](https://github.com/shridpant/danfe/issues). Please carefully read and follow the [Contributor Covenant Code of Conduct](https://github.com/shridpant/danfe/blob/main/CODE_OF_CONDUCT.md) while participating in this project.
+This project welcomes contributions and suggestions. Feel free to fork this repository or submit your ideas through [issues](https://github.com/shridpant/danfe/issues). Please carefully read and follow the [Contributor Covenant Code of Conduct](https://github.com/shridpant/danfe/blob/master/CODE_OF_CONDUCT.md) while participating in this project.
 
 ## License
 
-Distributed under the GNU General Public License v3.0 as published by the Free Software Foundation. See [LICENSE](https://github.com/shridpant/danfe/blob/main/LICENSE) for more information.
+Distributed under the GNU General Public License v3.0 as published by the Free Software Foundation. See [LICENSE](https://github.com/shridpant/danfe/blob/master/LICENSE) for more information.
 
 ## Contact
 
@@ -89,9 +93,13 @@ Feel free to hmu on my [LinkedIn](https://www.linkedin.com/in/shridpant/).
 
 ## Acknowledgements
 
+* [io](https://docs.python.org/3/library/io.html)
 * [re](https://docs.python.org/3/library/re.html)
-* [json](https://docs.python.org/3/library/json.html)
+* [ast](https://docs.python.org/3/library/ast.html)
 * [csv](https://docs.python.org/3/library/csv.html)
+* [json](https://docs.python.org/3/library/json.html)
+* [argparse](https://docs.python.org/3/library/argparse.html)
+* [textwrap](https://docs.python.org/3.6/library/textwrap.html)
 * [Adobe Photoshop Express](https://www.adobe.com/photoshop/online/photo-to-painting.html)
 * [Wikipedia](https://commons.wikimedia.org/wiki/File:HIMALAYAN_MONAL.jpg): The image was obtained under the [Creative Commons](https://en.wikipedia.org/wiki/Creative_Commons) [Attribution-Share Alike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/deed.en). Therefore, the [modified image](assets/logo.png) is also distributed under the same license.
 * [Inskipp C., Baral H. S., Phuyal S., Bhatt T. R., Khatiwada M., Inskipp, T, Khatiwada A., Gurung S., Singh P. B., Murray L., Poudyal L.
