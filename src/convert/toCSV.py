@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import os
-import json, csv, re, io
+import json, csv, re, io, ast
 
 class ToCSV():
     def __init__(self, file_path, file_extension, logger):
@@ -52,6 +52,10 @@ class ToCSV():
                     csv_writer.writerow(data_values)
                 else:
                     file_contents = file_to_open.read()
+                    try:
+                        file_contents = ast.literal_eval(file_contents)
+                    except Exception as e:
+                        self.logger.log(str(e), 500)
                     if isinstance(file_contents, list):
                         csv_writer = csv.writer(converted_file)
                         for each_row in file_contents:
@@ -65,6 +69,7 @@ class ToCSV():
                         self.logger.log("Unsupported file type", 400)
                         return None       
             except Exception as e:
-                self.logger.log(str(e), 500)  
+                self.logger.log(str(e)) 
+                self.logger.log("CSV conversion error") 
                 return None       
         return converted_file.getvalue()

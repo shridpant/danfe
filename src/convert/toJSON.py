@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import csv, json, re, ast, pickle
+import csv, json, re, ast
 
 class ToJSON():
     def __init__(self, file_path, file_extension, logger):
@@ -47,7 +47,10 @@ class ToJSON():
                 converted_file = json.load(file_to_open)
             else:
                 file_contents = file_to_open.read()
-                print(file_contents)
+                try:
+                    file_contents = ast.literal_eval(file_contents)
+                except Exception as e:
+                    self.logger.log(str(e), 500)
                 if isinstance(file_contents, dict):
                     counter = 0
                     for row in file_contents:
@@ -73,7 +76,8 @@ class ToJSON():
                         value = self.convert_helper(value)
                     result_json[key] = value
                 result_json = json.dumps(result_json)
-            except:
+            except Exception as e:
+                self.logger.log(str(e))
                 self.logger.log("List values aren't in pairs", 500)
                 return None
         return result_json

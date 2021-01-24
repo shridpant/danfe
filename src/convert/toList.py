@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import os
-import json, csv, re
+import json, csv, re, ast
 
 class ToList():
 	def __init__(self, file_path, file_extension, logger):
@@ -46,8 +46,18 @@ class ToList():
 					valueParameter = [name.strip('\'') for name in match.group().split('=')[1].split(',')]
 					converted_file.append([keyParameter, valueParameter])
 			else:
-				self.logger.log("Unsupported file type", 400)
-				converted_file = None
+				file_contents = file_to_open.read()
+				try:
+					file_contents = ast.literal_eval(file_contents)
+				except Exception as e:
+					self.logger.log(str(e), 500)
+				if isinstance(file_contents, list):
+					converted_file = file_contents
+				elif isinstance(file_contents, dict):
+					converted_file = self.convert_helper(file_contents)
+				else:
+					self.logger.log("Unsupported file type", 400)
+					converted_file = None
 		return converted_file
 
 	def convert_helper(self, data_structure):
@@ -58,7 +68,8 @@ class ToList():
 					if isinstance(value, dict):
 						value = self.convert_helper(value)
 					result_list.append([key, value])
-			except:
+			except Exception as e:
+				self.logger.log(str(e))
 				self.logger.log("Dict to list conversion error", 500)
 				return None
 		return result_list
