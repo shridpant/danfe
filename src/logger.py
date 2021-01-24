@@ -30,12 +30,12 @@ class Logger:
         message = str(message)
         if fatal == 400:
             message = "BAD REQUEST: " + message
-        if fatal == 500:
+        elif fatal == 500:
             message = "FATAL: " + message
-        if self.verbose or fatal:
+        if display == True:
+            print(message)            
+        elif self.verbose or fatal:
             print("message:", message)
-        elif display == True:
-            print(message)
         with open(self.log_path, "a") as log_file:
             log_file.write(message + "\n")
 

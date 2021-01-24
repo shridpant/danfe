@@ -11,8 +11,7 @@ cdb1.__streams_pool_size=0
 *.audit_file_dest='/u01/app/oracle/admin/cdb1/adump'
 *.audit_trail='db'
 *.compatible='12.1.0.0.0'
-*.control_files='/u01/app/oracl
-e/oradata/cdb1/control01.ctl','/u01/app/oracle/fast_recovery_area/cdb1/control02.ctl'
+*.control_files='/u01/app/oracle/oradata/cdb1/control01.ctl','/u01/app/oracle/fast_recovery_area/cdb1/control02.ctl'
 *.db_block_size=8192
 *.db_domain=''
 *.db_name='cdb1'

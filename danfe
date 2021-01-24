@@ -41,6 +41,8 @@ def convert_file(file_to_convert, convert_to, logger):
         converted_file = file_to_convert.to_dict()
     elif convert_to.upper() == "JSON":
         converted_file = file_to_convert.to_JSON()
+    elif convert_to.upper() == "CSV":
+        converted_file = file_to_convert.to_CSV()
     else:
         logger.log("Unknown file option", 400)
         converted_file = None
@@ -51,7 +53,7 @@ def parse_arguments():
         description='Transform files from the command line.',
         epilog="danfe allows transformation of data/files to and from json, csv, list and dictionary.")
     PARSER.add_argument("-v", "--verbose", help="enable verbose", action="store_true")
-    PARSER.add_argument("-s", "--save", metavar="LOCATION", help="location to save the output")
+    PARSER.add_argument("-s", "--save", metavar="LOCATION", help="absolute or relative path to save the output")
     PARSER.add_argument("filename", metavar="FILENAME", help="absolute or relative path to the argument file")
     PARSER.add_argument("-t", "--target", choices = ["list", "dict", "json", "csv"], required=True, help="target file format or data structure to convert to")
     ARGV = PARSER.parse_args()
