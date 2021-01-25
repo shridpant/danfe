@@ -25,39 +25,44 @@
 ## Installation
 
 1. Execute `git clone https://github.com/shridpant/danfe`.
-2. Add `danfe` to your PATH as:
-    a. Temporary: Write `export PATH=$PATH:/path/to/danfe` to terminal.
-    b. Permanent: Append `export PATH=$PATH:/path/to/danfe` to the end of your `~/.bashrc` file. Finally, type `source ~/.bashrc`.
+2. Add `danfe` to your PATH as follows:
+    1. Temporary: Write `export PATH=$PATH:/path/to/danfe` to terminal.
+    2. Permanent: Append `export PATH=$PATH:/path/to/danfe` to the end of your `~/.bashrc` file. Finally, type `source ~/.bashrc`.
 3. And you're all set! <br />
 ==== EXTRA ====
-4. _(Additionally)_ Please check that you have the necessary permissions on your computer before running the program. 
-5. _(Additionally)_ If not already done, make `danfe` executable by running `chmod +x danfe` in the root directory of `danfe`.
+4. _(Additionally)_ Please ensure that you have the necessary permissions on your OS before running the program. 
+5. _(Additionally)_ Make `danfe` executable by running `chmod +x danfe` in the root directory of `danfe`.
 
-Note: `danfe` requires Python 3 to run. No external dependencies are required, however.
+**Note:** `danfe` requires Python 3 to run. No external dependencies are required, however.
 
 ## Execution
 
-* **Inputs:** In its present form, `danfe` can take .json, .csv and .ora files are inputs. Besides that, `danfe` is able to read some data structures (lists and dictionaries) provided as inputs through an extension-less file. Learn more about the inputs on the [wiki]().
-* **Outputs:** By default, `danfe` only prints the output to the command-line. Exercising the `-s LOCATION` option should allow the users to save the output _as any file type, to any location_. To save to the current location, just append `-s .` to your command. Learn more about the outputs on the [wiki]().
-
 <p>
-<img src="assets/help.gif">
+<img src="assets/terminal/help.gif">
 </p>
 
 ### Standalone 
 
-The command-line interface is simple and powerful. Transform your files with simple commands and perform _get_ and/or _save_ operations to the output. Usage:
+The command-line interface is simple and powerful. Transform your files with simple commands and perform _get_ and/or _save_ operations to the output. 
 
-`danfe [-h] [-v] [-s LOCATION] -t {list,dict,json,csv} FILENAME`
+**Usage:**
 
-**required arguments:** <br />
+`danfe [-h] [--version] [-v] [-q] [-s LOCATION] -t {list,dict,json,csv} FILENAME`
+
+_required arguments:_ <br />
 `FILENAME` _absolute or relative path to the argument file_<br />
-`-t {list,dict,json,csv}, --target {list,dict,json,csv}` _target file format or data structure to convert to_ <br />s
-**optional arguments:** <br />
+`-t {list,dict,json,csv}, --target {list,dict,json,csv}` _target file format or data structure to convert to_ <br />
+_optional arguments:_ <br />
 `-h, --help` _show this help message and exit_ <br />
 `--version` _show program's version number and exit_ <br />
 `-v, --verbose` _enable verbose_ <br />
+`-q, --quiet` _enable quiet mode_ <br />
 `-s LOCATION, --save LOCATION` _absolute or relative path to save the output_ <br />
+
+**Providing inputs and receiving outputs:**
+
+* Inputs: In its present form, `danfe` can take _.json_, _.csv_ and _.ora_ files as inputs. Additionally, `danfe` is able to read some data structures (lists and dictionaries) provided as inputs through an extension-less file. Learn more about the inputs on the [wiki](https://github.com/shridpant/danfe/wiki/Inputs-&-Outputs).
+* Outputs: By default, `danfe` only prints the output to the command-line; enfore the quiet mode to prevent this. Exercising the `-s LOCATION` option should allow the users to save the output _as any file type, to any location_. To save to the current location, just append `-s .` to your command. Learn more about the outputs on the [wiki](https://github.com/shridpant/danfe/wiki/Inputs-&-Outputs).
 
 ### Plug and Play
 
@@ -68,16 +73,16 @@ The source code of `danfe` is highly modularized and, thus, supports _plug and p
 _Example 1:_ To simply display the output on the command-line.
 
 <p>
-<img src="assets/display_output.gif">
+<img src="assets/terminal/display_output.gif">
 </p>
 
 _Example 2:_ To save the output to the current directory you're in.
 
 <p>
-<img src="assets/save_output.gif">
+<img src="assets/terminal/save_output.gif">
 </p>
 
-Note: In any case, the logs are stored in a temporary directory. The location of the log files are printed on the command-line by default.
+**Note:** In any case, the _log file_ and the _status file_ are stored in a temporary directory. The location of these files are printed on the command-line by default. 
 
 ## Contributing
 
