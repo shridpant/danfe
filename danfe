@@ -26,10 +26,14 @@ from src.utils.utils import ErrorHandler, Save
 version = '0.1'
 
 def main():
-    file_path, verbose, convert_to, save_location = parse_arguments()
+    file_path, verbose, quiet, convert_to, save_location = parse_arguments()
     danfe_logger = Logger(verbose)
     file_object = Danfe(file_path, danfe_logger)
     result = convert_file(file_object, convert_to, danfe_logger)
+    if quiet:
+        danfe_logger.log(result)
+    else:
+        danfe_logger.log(result, display=True)
     if save_location:
         danfe_save = Save(result, save_location, convert_to, danfe_logger)
         danfe_save.save()
@@ -62,11 +66,14 @@ def parse_arguments():
             under certain conditions. For details, see <https://www.gnu.org/licenses/>.
             '''))
     PARSER.add_argument('--version', action = 'version', version = str('%(prog)s '+ version))
-    PARSER.add_argument("-v", "--verbose", help = "enable verbose", action = "store_true")
+    PARSER.add_argument("-v", "--verbose", help = "enable verbose mode", action = "store_true")
+    PARSER.add_argument("-q", "--quiet", help = "enable quiet mode", action = "store_true")
     PARSER.add_argument("-s", "--save", metavar = "LOCATION", help = "absolute or relative path to save the output")
     PARSER.add_argument("filename", metavar = "FILENAME", help = "absolute or relative path to the argument file")
     PARSER.add_argument("-t", "--target", choices = ["list", "dict", "json", "csv"], required = True, help = "target file format or data structure to convert to")
     ARGV = PARSER.parse_args()
+    if ARGV.verbose and ARGV.quiet:
+        PARSER.error('--verbose and --quiet must not be provided together')
     if not os.path.isabs(ARGV.filename):
         ARGV.filename = os.getcwd() + "/" + ARGV.filename
     if ARGV.save and not os.path.isabs(ARGV.save):
@@ -74,7 +81,7 @@ def parse_arguments():
             ARGV.save = os.getcwd() +  "/" + ARGV.save
         else:
             ARGV.save = os.getcwd()
-    return ARGV.filename, ARGV.verbose, ARGV.target, ARGV.save
+    return ARGV.filename, ARGV.verbose, ARGV.quiet, ARGV.target, ARGV.save
 
 if __name__ == '__main__' :
     try:
