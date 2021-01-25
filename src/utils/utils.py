@@ -32,8 +32,10 @@ class Save():
         self.logger = logger
 
     def save(self):
-        if self.convert_to != "json" or self.convert_to != "csv":
+        if self.convert_to != "json" and self.convert_to != "csv":
             self.convert_to = ""
+        else:
+            self.convert_to = "." + self.convert_to
         if os.path.isdir(self.location):
             self.location = self.location + "/output" + self.convert_to
         subprocess.Popen(["touch", self.location], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
