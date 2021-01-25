@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import os
 import json, csv, re, io, ast
 
 class ToCSV():
@@ -22,12 +21,12 @@ class ToCSV():
         self.file_path = file_path
         self.file_extension = file_extension
         self.logger = logger
-        self.logger.log("Inside toCSV.py")
+        self.logger.log(ToCSV.__name__)
 
     def convert(self):
-        converted_file = io.StringIO()
-        with open(self.file_path,'r') as file_to_open:
-            try:
+        try:
+            converted_file = io.StringIO()
+            with open(self.file_path,'r') as file_to_open:
                 if self.file_extension == "json":
                     file_contents = json.load(file_to_open)
                     csv_writer = csv.writer(converted_file)
@@ -51,11 +50,7 @@ class ToCSV():
                     csv_writer.writerow(data_keys)
                     csv_writer.writerow(data_values)
                 else:
-                    file_contents = file_to_open.read()
-                    try:
-                        file_contents = ast.literal_eval(file_contents)
-                    except Exception as e:
-                        self.logger.log(str(e), 500)
+                    file_contents = ast.literal_eval(file_to_open.read())
                     if isinstance(file_contents, list):
                         csv_writer = csv.writer(converted_file)
                         for each_row in file_contents:
@@ -66,10 +61,10 @@ class ToCSV():
                         for each_row in file_contents:
                             csv_writer.writerow(each_row.values())
                     else:
-                        self.logger.log("Unsupported file type", 400)
-                        return None       
-            except Exception as e:
-                self.logger.log(str(e)) 
-                self.logger.log("CSV conversion error") 
-                return None       
-        return converted_file.getvalue()
+                        self.logger.log("Unsupported file/data type", 400, ToCSV.convert.__name__, -1)
+                        return None    
+            self.logger.log(status_message = ToCSV.convert.__name__, status_code = 0)
+            return converted_file.getvalue()   
+        except Exception as e:
+            self.logger.log(str(e), 500, ToCSV.convert.__name__, -1) 
+            return None       

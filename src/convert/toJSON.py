@@ -21,37 +21,14 @@ class ToJSON():
         self.file_path = file_path
         self.file_extension = file_extension
         self.logger = logger
-        self.logger.log("Inside toJSON.py")
+        self.logger.log(ToJSON.__name__)
 
     def convert(self):
-        converted_file = {}
-        with open(self.file_path,'r') as file_to_open:
-            if self.file_extension == "csv":
-                file_contents = csv.DictReader(file_to_open)
-                counter = 0
-                for row in file_contents:
-                    each_row = {}
-                    for key, value in row.items():
-                        each_row[key] = value
-                    converted_file[counter] = each_row
-                    counter += 1
-                converted_file = json.dumps(converted_file)
-            elif self.file_extension == "ora":
-                file_contents = file_to_open.read()
-                configRegX = re.compile(r"\*\..+=.+")
-                for match in configRegX.finditer(file_contents):
-                    key_parameter = match.group().split('=')[0].lstrip('*\.')
-                    value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
-                    converted_file[key_parameter] =  value_parameter
-            elif self.file_extension == "json":
-                converted_file = json.load(file_to_open)
-            else:
-                file_contents = file_to_open.read()
-                try:
-                    file_contents = ast.literal_eval(file_contents)
-                except Exception as e:
-                    self.logger.log(str(e), 500)
-                if isinstance(file_contents, dict):
+        try:
+            converted_file = {}
+            with open(self.file_path,'r') as file_to_open:
+                if self.file_extension == "csv":
+                    file_contents = csv.DictReader(file_to_open)
                     counter = 0
                     for row in file_contents:
                         each_row = {}
@@ -60,24 +37,46 @@ class ToJSON():
                         converted_file[counter] = each_row
                         counter += 1
                     converted_file = json.dumps(converted_file)
-                elif isinstance(file_contents, list):
-                    converted_file = self.convert_helper(file_contents)
+                elif self.file_extension == "ora":
+                    file_contents = file_to_open.read()
+                    configRegX = re.compile(r"\*\..+=.+")
+                    for match in configRegX.finditer(file_contents):
+                        key_parameter = match.group().split('=')[0].lstrip('*\.')
+                        value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
+                        converted_file[key_parameter] =  value_parameter
+                elif self.file_extension == "json":
+                    converted_file = json.load(file_to_open)
                 else:
-                    self.logger.log("Unsupported file type", 400)
-                    return None
-        return converted_file
+                    file_contents = ast.literal_eval(file_to_open.read())
+                    if isinstance(file_contents, dict):
+                        counter = 0
+                        for row in file_contents:
+                            each_row = {}
+                            for key, value in row.items():
+                                each_row[key] = value
+                            converted_file[counter] = each_row
+                            counter += 1
+                        converted_file = json.dumps(converted_file)
+                    elif isinstance(file_contents, list):
+                        converted_file = self.convert_helper(file_contents)
+                    else:
+                        self.logger.log("Unsupported file/data type", 400, ToJSON.convert.__name__, -1)
+                        return None
+            self.logger.log(status_message = ToJSON.convert.__name__, status_code = 0)
+            return converted_file
+        except Exception as e:
+            self.logger.log(str(e), 500, ToJSON.convert.__name__, -1)
 
     def convert_helper(self, data_structure):
-        result_json = {}
-        if isinstance(data_structure, list):
-            try:
+        try:
+            result_json = {}
+            if isinstance(data_structure, list):
                 for key, value in list:
                     if isinstance(value, list):
                         value = self.convert_helper(value)
                     result_json[key] = value
                 result_json = json.dumps(result_json)
-            except Exception as e:
-                self.logger.log(str(e))
-                self.logger.log("List values aren't in pairs", 500)
-                return None
-        return result_json
+            return result_json
+        except Exception as e:
+            self.logger.log(str(e), 500, ToJSON.convert_helper.__name__, -1)
+            return None

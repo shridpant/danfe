@@ -33,7 +33,8 @@ def main():
     if save_location:
         danfe_save = Save(result, save_location, convert_to, danfe_logger)
         danfe_save.save()
-    input(">> Press any key to continue ...")
+    danfe_logger.log(status_message = __name__, status_code = 0)
+    input(">> Press enter to continue ...")
 
 def convert_file(file_to_convert, convert_to, logger):
     if convert_to == "list":
@@ -45,26 +46,26 @@ def convert_file(file_to_convert, convert_to, logger):
     elif convert_to.upper() == "CSV":
         converted_file = file_to_convert.to_CSV()
     else:
-        logger.log("Unknown file option", 400)
+        logger.log("Unknown file option", 400, convert_file.__name__, -1)
         converted_file = None
     return converted_file
 
 def parse_arguments():
     PARSER = argparse.ArgumentParser(
-        prog="danfe",
-        formatter_class=argparse.RawTextHelpFormatter,
-        description='danfe allows transformation of data/files to and from json, csv, list and dictionary.',
-        epilog=textwrap.dedent('''\
+        prog = "danfe",
+        formatter_class = argparse.RawTextHelpFormatter,
+        description = 'danfe allows transformation of data/files to and from json, csv, list and dictionary.',
+        epilog = textwrap.dedent('''\
             danfe Copyright (C) 2020-2021  Shrid Pant
             This program comes with ABSOLUTELY NO WARRANTY.
             This is free software, and you are welcome to redistribute it 
             under certain conditions. For details, see <https://www.gnu.org/licenses/>.
             '''))
-    PARSER.add_argument('--version', action='version', version=str('%(prog)s '+ version))
-    PARSER.add_argument("-v", "--verbose", help="enable verbose", action="store_true")
-    PARSER.add_argument("-s", "--save", metavar="LOCATION", help="absolute or relative path to save the output")
-    PARSER.add_argument("filename", metavar="FILENAME", help="absolute or relative path to the argument file")
-    PARSER.add_argument("-t", "--target", choices = ["list", "dict", "json", "csv"], required=True, help="target file format or data structure to convert to")
+    PARSER.add_argument('--version', action = 'version', version = str('%(prog)s '+ version))
+    PARSER.add_argument("-v", "--verbose", help = "enable verbose", action = "store_true")
+    PARSER.add_argument("-s", "--save", metavar = "LOCATION", help = "absolute or relative path to save the output")
+    PARSER.add_argument("filename", metavar = "FILENAME", help = "absolute or relative path to the argument file")
+    PARSER.add_argument("-t", "--target", choices = ["list", "dict", "json", "csv"], required = True, help = "target file format or data structure to convert to")
     ARGV = PARSER.parse_args()
     if not os.path.isabs(ARGV.filename):
         ARGV.filename = os.getcwd() + "/" + ARGV.filename

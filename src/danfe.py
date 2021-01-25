@@ -25,6 +25,7 @@ class Danfe():
 		self.logger = logger
 		self.file_path = file_path
 		self.file_extension = self.find_extension()
+		self.logger.log(Danfe.__name__)
 
 	def find_extension(self):
 		filename, file_extension = os.path.splitext(self.file_path)
@@ -32,9 +33,10 @@ class Danfe():
 	
 	def file_existence(self):
 		if os.path.exists(self.file_path):
-			self.logger.log("File exists at " + self.file_path)
+			self.logger.log("File exists at " + self.file_path, 0, Danfe.file_existence.__name__, 0)
 			return True
 		else:
+			self.logger.status(Danfe.file_existence.__name__, 400, Danfe.file_existence.__name__, -1)
 			self.logger.log("File doesn't exist")
 			return False
 
@@ -43,11 +45,12 @@ class Danfe():
 			convert_to_list = ToList(self.file_path, self.file_extension, self.logger)
 			converted_file = convert_to_list.convert()
 			if not converted_file:
-				self.logger.log("List conversion failed", 500)
-			self.logger.log(converted_file, display=True)
+				self.logger.log("List conversion failed", 500, Danfe.to_list.__name__, -1)
+				return None
+			self.logger.log(converted_file, 0, Danfe.to_list.__name__, 0, display=True)
 			return converted_file
 		else:
-			self.logger.log("File couldn't be read", 400)
+			self.logger.log("File couldn't be read", 400, Danfe.to_list.__name__, -1)
 			return None
 
 	def to_dict(self):
@@ -55,11 +58,12 @@ class Danfe():
 			convert_to_dict = ToDict(self.file_path, self.file_extension, self.logger)
 			converted_file = convert_to_dict.convert()
 			if not converted_file:
-				self.logger.log("Dictionary conversion failed", 500)
-			self.logger.log(converted_file, display=True)
+				self.logger.log("Dictionary conversion failed", 500, Danfe.to_dict, -1)
+				return None
+			self.logger.log(converted_file, 0, Danfe.to_dict.__name__, 0, display=True)
 			return converted_file
 		else:
-			self.logger.log("File couldn't be read", 400)
+			self.logger.log("File couldn't be read", 400, Danfe.to_dict.__name__, -1)
 			return None
 
 	def to_JSON(self):
@@ -67,11 +71,12 @@ class Danfe():
 			convert_to_JSON = ToJSON(self.file_path, self.file_extension, self.logger)
 			converted_file = convert_to_JSON.convert()
 			if not converted_file:
-				self.logger.log("JSON conversion failed", 500)
-			self.logger.log(converted_file, display=True)
+				self.logger.log("JSON conversion failed", 500, Danfe.to_JSON.__name__, -1)
+				return None
+			self.logger.log(converted_file, 0, Danfe.to_JSON, 0, display=True)
 			return converted_file
 		else:
-			self.logger.log("File couldn't be read", 400)
+			self.logger.log("File couldn't be read", 400, Danfe.to_JSON.__name__, -1)
 			return None
 
 	def to_CSV(self):
@@ -79,9 +84,10 @@ class Danfe():
 			convert_to_CSV = ToCSV(self.file_path, self.file_extension, self.logger)
 			converted_file = convert_to_CSV.convert()
 			if not converted_file:
-				self.logger.log("CSV conversion failed", 500)
-			self.logger.log(converted_file, display=True)
+				self.logger.log("CSV conversion failed", 500, Danfe.to_CSV.__name__, -1)
+				return None
+			self.logger.log(converted_file, 0, Danfe.to_CSV, 0, display=True)
 			return converted_file
 		else:
-			self.logger.log("File couldn't be read", 400)
+			self.logger.log("File couldn't be read", 400, Danfe.to_CSV.__name__, -1)
 			return None

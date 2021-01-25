@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import os
 import json, csv, re, ast
 
 class ToDict():
@@ -22,55 +21,55 @@ class ToDict():
         self.file_path = file_path
         self.file_extension = file_extension
         self.logger = logger
-        self.logger.log("Inside toDict.py")
+        self.logger.log(ToDict.__name__)
 
     def convert(self):
-        converted_file = {}
-        with open(self.file_path,'r') as file_to_open:
-            if self.file_extension == "json":
-                file_contents = file_to_open.read()
-                converted_file = json.loads(file_contents)
-            elif self.file_extension == "csv":
-                file_contents = csv.DictReader(file_to_open)
-                counter = 0
-                for row in file_contents:
-                    each_row = {}
-                    for key, value in row.items():
-                        each_row[key] = value
-                    converted_file[counter] = each_row
-                    counter += 1
-            elif self.file_extension == "ora":
-                file_contents = file_to_open.read()
-                configRegX = re.compile(r"\*\..+=.+")
-                for match in configRegX.finditer(file_contents):
-                    key_parameter = match.group().split('=')[0].lstrip('*\.')
-                    value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
-                    converted_file[key_parameter] =  value_parameter
-            else:
-                file_contents = file_to_open.read()
-                try:
-                    file_contents = ast.literal_eval(file_contents)
-                except Exception as e:
-                    self.logger.log(str(e), 500)
-                if isinstance(file_contents, list):
-                    converted_file = self.convert_helper(file_contents)
-                elif isinstance(file_contents, dict):
-                    converted_file = file_contents
+        try:
+            converted_file = {}
+            with open(self.file_path,'r') as file_to_open:
+                if self.file_extension == "json":
+                    file_contents = file_to_open.read()
+                    converted_file = json.loads(file_contents)
+                elif self.file_extension == "csv":
+                    file_contents = csv.DictReader(file_to_open)
+                    counter = 0
+                    for row in file_contents:
+                        each_row = {}
+                        for key, value in row.items():
+                            each_row[key] = value
+                        converted_file[counter] = each_row
+                        counter += 1
+                elif self.file_extension == "ora":
+                    file_contents = file_to_open.read()
+                    configRegX = re.compile(r"\*\..+=.+")
+                    for match in configRegX.finditer(file_contents):
+                        key_parameter = match.group().split('=')[0].lstrip('*\.')
+                        value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
+                        converted_file[key_parameter] =  value_parameter
                 else:
-                    self.logger.log("Unsupported file type", 400)
-                    return None
-        return converted_file
+                    file_contents = ast.literal_eval(file_to_open.read())
+                    if isinstance(file_contents, list):
+                        converted_file = self.convert_helper(file_contents)
+                    elif isinstance(file_contents, dict):
+                        converted_file = file_contents
+                    else:
+                        self.logger.log("Unsupported file/data type", 400, ToDict.convert.__name__, -1)
+                        return None
+            self.logger.log(status_message = ToDict.convert.__name__, status_code = 0)
+            return converted_file
+        except Exception as e:
+            self.logger.log(str(e), 500, ToDict.convert.__name__, -1)
+            return None
 
     def convert_helper(self, data_structure):
-        result_dict = {}
-        if isinstance(data_structure, list):
-            try:
+        try:
+            result_dict = {}
+            if isinstance(data_structure, list):
                 for key, value in list:
                     if isinstance(value, list):
                         value = self.convert_helper(value)
                     result_dict[key] = value
-            except Exception as e:
-                self.logger.log(str(e))
-                self.logger.log("List values aren't in pairs", 500)
-                return None
-        return result_dict
+            return result_dict
+        except Exception as e:
+            self.logger.log(str(e), 500, ToDict.convert_helper.__name__, -1)
+            return None

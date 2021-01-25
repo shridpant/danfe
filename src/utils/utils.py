@@ -30,15 +30,19 @@ class Save():
         self.location = location 
         self.convert_to = convert_to
         self.logger = logger
+        self.logger.log(Save.__name__)
 
     def save(self):
-        if self.convert_to != "json" and self.convert_to != "csv":
-            self.convert_to = ""
-        else:
-            self.convert_to = "." + self.convert_to
-        if os.path.isdir(self.location):
-            self.location = self.location + "/output" + self.convert_to
-        subprocess.Popen(["touch", self.location], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-        with open(self.location, 'w') as output:
-            output.write(str(self.result))
-        self.logger.log(">> output file at " + self.location, display=True)
+        try:
+            if self.convert_to != "json" and self.convert_to != "csv":
+                self.convert_to = ""
+            else:
+                self.convert_to = "." + self.convert_to
+            if os.path.isdir(self.location):
+                self.location = self.location + "/output" + self.convert_to
+            subprocess.Popen(["touch", self.location], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+            with open(self.location, 'w') as output:
+                output.write(str(self.result))
+            self.logger.log(">> output file at " + self.location, 0, Save.save.__name__, 0, display=True)
+        except Exception as e:
+            self.logger.log(str(e), 500, Save.save.__name__, -1)

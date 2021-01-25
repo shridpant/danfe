@@ -14,31 +14,51 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import os
-import subprocess
+import json
 import tempfile
+import subprocess
 from datetime import datetime
 
 class Logger:
     def __init__(self, verbose = None):
         self.verbose = verbose
         self.root_path = tempfile.mkdtemp()
-        self.log_path = str(self.root_path) + "/" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".txt"
-        self.make_log()
+        self.file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        self.log_path = str(self.root_path) + "/log_" + self.file_name + ".txt"
+        self.status_path = str(self.root_path) + "/status_" + self.file_name + ".json"
+        self.status_message = []
+        self.make_files()
 
-    def log(self, message, fatal=None, display=False):
+    def log(self, log_message=None, log_code=None, status_message=None, status_code=None, display=False):
+        if status_code or status_message:
+            self.status(status_message, status_code)
+        if log_message:
+            log_message = self.append_message(log_message, log_code)
+            if display == True:
+                print(log_message)            
+            elif self.verbose or log_code:
+                print(log_message)
+            with open(self.log_path, "a") as log_file:
+                log_file.write(log_message + "\n")
+
+    def status(self, key, code):
+        message = {str(key):code}
+        self.status_message.append(message)
+        if key == "__main__":
+            with open(self.status_path, "w", encoding='utf-8') as status_file:
+                json.dump(self.status_message, status_file)
+
+    def append_message(self, message, log_code=None):
         message = str(message)
-        if fatal == 400:
+        if log_code == 400:
             message = "BAD REQUEST: " + message
-        elif fatal == 500:
+        elif log_code == 500:
             message = "FATAL: " + message
-        if display == True:
-            print(message)            
-        elif self.verbose or fatal:
-            print("message:", message)
-        with open(self.log_path, "a") as log_file:
-            log_file.write(message + "\n")
+        elif self.verbose:
+            message = "(message:) " + message
+        return message
 
-    def make_log(self):
+    def make_files(self):
         subprocess.Popen(["touch", self.log_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-        self.log(">> logs stored at: " + self.log_path, display=True)
+        subprocess.Popen(["touch", self.status_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        self.log(">> logs & status stored at: " + self.root_path, display=True)
