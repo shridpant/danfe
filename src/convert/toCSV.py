@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import json, csv, re, io, ast
+from xml.etree import ElementTree as ET
 
 class ToCSV():
     def __init__(self, file_path, file_extension, logger):
@@ -49,6 +50,10 @@ class ToCSV():
                         data_values.append(";".join([name.strip('\'') for name in match.group().split('=')[1].split(',')]))
                     csv_writer.writerow(data_keys)
                     csv_writer.writerow(data_values)
+                elif self.file_extension == "xml":
+                    file_contents = ET.parse(file_to_open)
+                    root_element = file_contents.getroot()
+                    converted_file = self.convert_helper(root_element)
                 else:
                     file_contents = ast.literal_eval(file_to_open.read())
                     if isinstance(file_contents, list):
@@ -67,4 +72,34 @@ class ToCSV():
             return converted_file.getvalue()   
         except Exception as e:
             self.logger.log(str(e), 500, ToCSV.convert.__name__, -1) 
-            return None       
+            return None      
+
+    def convert_helper(self, data_structure):
+        try:
+            result_csv = io.StringIO()
+            csv_writer = csv.writer(result_csv)
+            if isinstance(data_structure, ET.Element):
+                def xml_helper(node, numbering_path="", return_dict=None):
+                    if return_dict == None:
+                        return_dict = {}
+                    name_prefix = numbering_path + ("/" if numbering_path else "") + node.tag
+                    numbers = list()
+                    for similar_name in return_dict.keys():
+                        if similar_name.startswith(name_prefix):
+                            numbers.append(int(similar_name[len(name_prefix):].split("/")[0]))
+                    if not numbers:
+                        numbers.append(0)
+                    key_name = name_prefix + str(max(numbers) + 1)
+                    return_dict[key_name] = "" if node.text.isspace() else node.text.strip("\"")
+                    for childnode in list(node):
+                        xml_helper(childnode, key_name, return_dict)
+                    return return_dict
+                result_dict = xml_helper(data_structure)
+                csv_writer.writerow(result_dict.keys())
+                csv_writer.writerow(result_dict.values())
+            else:
+                result_csv = None
+            return result_csv
+        except Exception as e:
+            self.logger.log(str(e), 500, ToCSV.convert_helper.__name__, -1)
+            return None 
