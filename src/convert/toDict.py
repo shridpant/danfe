@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import json, csv, re, ast
+from xml.etree import ElementTree as ET
 
 class ToDict():
     def __init__(self, file_path, file_extension, logger):
@@ -46,6 +47,10 @@ class ToDict():
                         key_parameter = match.group().split('=')[0].lstrip('*\.')
                         value_parameter = {name.strip('\'') for name in match.group().split('=')[1].split(',')}
                         converted_file[key_parameter] =  value_parameter
+                elif self.file_extension == "xml":
+                    file_contents = ET.parse(file_to_open)
+                    root_element = file_contents.getroot()
+                    converted_file = self.convert_helper(root_element)
                 else:
                     file_contents = ast.literal_eval(file_to_open.read())
                     if isinstance(file_contents, list):
@@ -69,6 +74,25 @@ class ToDict():
                     if isinstance(value, list):
                         value = self.convert_helper(value)
                     result_dict[key] = value
+            elif isinstance(data_structure, ET.Element):
+                def xml_helper(node, path="", return_dict=None):
+                    if return_dict == None:
+                        return_dict = {}
+                    name_prefix = path + ("/" if path else "") + node.tag
+                    numbers = list()
+                    for similar_name in return_dict.keys():
+                        if similar_name.startswith(name_prefix):
+                            numbers.append(int(similar_name[len(name_prefix):].split("/")[0]))
+                    if not numbers:
+                        numbers.append(0)
+                    key_name = name_prefix + str(max(numbers) + 1)
+                    return_dict[key_name] = "" if node.text.isspace() else node.text.strip("\"")
+                    for childnode in list(node):
+                        xml_helper(childnode, key_name, return_dict)
+                    return return_dict
+                result_dict = xml_helper(data_structure)
+            else:
+                result_dict = None
             return result_dict
         except Exception as e:
             self.logger.log(str(e), 500, ToDict.convert_helper.__name__, -1)

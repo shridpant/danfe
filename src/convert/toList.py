@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import json, csv, re, ast
+from xml.etree import ElementTree as ET
 
 class ToList():
 	def __init__(self, file_path, file_extension, logger):
@@ -45,6 +46,10 @@ class ToList():
 						keyParameter = match.group().split('=')[0].lstrip('*\.')
 						valueParameter = [name.strip('\'') for name in match.group().split('=')[1].split(',')]
 						converted_file.append([keyParameter, valueParameter])
+				elif self.file_extension == "xml":
+					file_contents = ET.parse(file_to_open)
+					root_element = file_contents.getroot()
+					converted_file = self.convert_helper(root_element)
 				else:
 					file_contents = ast.literal_eval(file_to_open.read())
 					if isinstance(file_contents, list):
@@ -68,6 +73,25 @@ class ToList():
 					if isinstance(value, dict):
 						value = self.convert_helper(value)
 					result_list.append([key, value])
+			elif isinstance(data_structure, ET.Element):
+				def xml_helper(node, path="", return_list=None):
+					if return_list == None:
+						return_list = []
+					name_prefix = path + ("/" if path else "") + node.tag
+					numbers = list()
+					for similar_name in return_list:
+						if similar_name[0].startswith(name_prefix):
+							numbers.append(int (similar_name[0][len(name_prefix):].split("/")[0] ) )
+					if not numbers:
+						numbers.append(0)
+					key_name = name_prefix + str(max(numbers) + 1)
+					return_list.append([key_name, "" if node.text.isspace() else node.text.strip("\"")])
+					for childnode in node:
+						xml_helper(childnode, key_name, return_list)
+					return return_list
+				result_list = xml_helper(data_structure)
+			else:
+				result_list = None
 			return result_list
 		except Exception as e:
 			self.logger.log(str(e), 500, ToList.convert_helper.__name__, -1)

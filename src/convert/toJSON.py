@@ -15,6 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 import csv, json, re, ast
+from xml.etree import ElementTree as ET
 
 class ToJSON():
     def __init__(self, file_path, file_extension, logger):
@@ -46,6 +47,10 @@ class ToJSON():
                         converted_file[key_parameter] =  value_parameter
                 elif self.file_extension == "json":
                     converted_file = json.load(file_to_open)
+                elif self.file_extension == "xml":
+                    file_contents = ET.parse(file_to_open)
+                    root_element = file_contents.getroot()
+                    converted_file = self.convert_helper(root_element)
                 else:
                     file_contents = ast.literal_eval(file_to_open.read())
                     if isinstance(file_contents, dict):
@@ -76,6 +81,29 @@ class ToJSON():
                         value = self.convert_helper(value)
                     result_json[key] = value
                 result_json = json.dumps(result_json)
+            elif isinstance(data_structure, ET.Element):
+                def xml_helper(node, numbering_path="", numbering_helper=None):
+                    return_json = {}
+                    if numbering_helper == None:
+                        numbering_helper = {}
+                    name_prefix = numbering_path + ("/" if numbering_path else "") + node.tag
+                    numbers = list()
+                    for similar_name in numbering_helper.keys():
+                        if similar_name.startswith(name_prefix):
+                            numbers.append(int(similar_name[len(name_prefix):].split("/")[0]))
+                    if not numbers:
+                        numbers.append(0)
+                    name_prefix = name_prefix + str(max(numbers) + 1)
+                    numbering_helper[name_prefix] = node.text
+                    key_name = node.tag + str(max(numbers) + 1)
+                    for childnode in list(node):
+                        return_json.setdefault(key_name, []).append(xml_helper(childnode, name_prefix, numbering_helper))
+                    if not list(node):
+                        return_json.setdefault(key_name, []).append(node.text.strip("\""))
+                    return return_json
+                result_json = json.dumps(xml_helper(data_structure))
+            else:
+                result_json = None
             return result_json
         except Exception as e:
             self.logger.log(str(e), 500, ToJSON.convert_helper.__name__, -1)
