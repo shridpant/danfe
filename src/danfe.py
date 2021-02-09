@@ -36,8 +36,7 @@ class Danfe():
 			self.logger.log("File exists at " + self.file_path, 0, Danfe.file_existence.__name__, 0)
 			return True
 		else:
-			self.logger.status(Danfe.file_existence.__name__, 400, Danfe.file_existence.__name__, -1)
-			self.logger.log("File doesn't exist")
+			self.logger.log("File doesn't exist", 400, Danfe.file_existence.__name__, -1)
 			return False
 
 	def to_list(self):

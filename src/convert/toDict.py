@@ -70,7 +70,7 @@ class ToDict():
         try:
             result_dict = {}
             if isinstance(data_structure, list):
-                for key, value in list:
+                for key, value in data_structure:
                     if isinstance(value, list):
                         value = self.convert_helper(value)
                     result_dict[key] = value
