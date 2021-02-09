@@ -62,9 +62,8 @@ class ToCSV():
                             csv_writer.writerow(each_row)
                     elif isinstance(file_contents, dict):
                         csv_writer = csv.writer(converted_file)
-                        csv_writer.writerow(file_contents[0].keys())
-                        for each_row in file_contents:
-                            csv_writer.writerow(each_row.values())
+                        csv_writer.writerow(file_contents.keys())
+                        csv_writer.writerow(file_contents.values())
                     else:
                         self.logger.log("Unsupported file/data type", 400, ToCSV.convert.__name__, -1)
                         return None    

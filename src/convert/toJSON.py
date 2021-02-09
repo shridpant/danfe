@@ -16,6 +16,7 @@
 
 import csv, json, re, ast
 from xml.etree import ElementTree as ET
+from src.utils.utils import CustomJSONEncoder
 
 class ToJSON():
     def __init__(self, file_path, file_extension, logger):
@@ -54,14 +55,9 @@ class ToJSON():
                 else:
                     file_contents = ast.literal_eval(file_to_open.read())
                     if isinstance(file_contents, dict):
-                        counter = 0
                         for row in file_contents:
-                            each_row = {}
-                            for key, value in row.items():
-                                each_row[key] = value
-                            converted_file[counter] = each_row
-                            counter += 1
-                        converted_file = json.dumps(converted_file)
+                            converted_file[row] = file_contents[row]
+                        converted_file = json.dumps(converted_file, cls=CustomJSONEncoder)
                     elif isinstance(file_contents, list):
                         converted_file = self.convert_helper(file_contents)
                     else:
@@ -76,7 +72,7 @@ class ToJSON():
         try:
             result_json = {}
             if isinstance(data_structure, list):
-                for key, value in list:
+                for key, value in data_structure:
                     if isinstance(value, list):
                         value = self.convert_helper(value)
                     result_json[key] = value
