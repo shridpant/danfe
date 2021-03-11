@@ -36,8 +36,7 @@ class Danfe():
 			self.logger.log("File exists at " + self.file_path, 0, Danfe.file_existence.__name__, 0)
 			return True
 		else:
-			self.logger.status(Danfe.file_existence.__name__, 400, Danfe.file_existence.__name__, -1)
-			self.logger.log("File doesn't exist")
+			self.logger.log("File doesn't exist", 400, Danfe.file_existence.__name__, -1)
 			return False
 
 	def to_list(self):
@@ -47,7 +46,7 @@ class Danfe():
 			if not converted_file:
 				self.logger.log("List conversion failed", 500, Danfe.to_list.__name__, -1)
 				return None
-			self.logger.log(converted_file, 0, Danfe.to_list.__name__, 0)
+			self.logger.log("List conversion successful", 0, Danfe.to_list.__name__, 0)
 			return converted_file
 		else:
 			self.logger.log("File couldn't be read", 400, Danfe.to_list.__name__, -1)
@@ -60,7 +59,7 @@ class Danfe():
 			if not converted_file:
 				self.logger.log("Dictionary conversion failed", 500, Danfe.to_dict, -1)
 				return None
-			self.logger.log(converted_file, 0, Danfe.to_dict.__name__, 0)
+			self.logger.log("Dictionary conversion successful", 0, Danfe.to_dict.__name__, 0)
 			return converted_file
 		else:
 			self.logger.log("File couldn't be read", 400, Danfe.to_dict.__name__, -1)
@@ -73,7 +72,7 @@ class Danfe():
 			if not converted_file:
 				self.logger.log("JSON conversion failed", 500, Danfe.to_JSON.__name__, -1)
 				return None
-			self.logger.log(converted_file, 0, Danfe.to_JSON.__name__, 0)
+			self.logger.log("JSON conversion successful", 0, Danfe.to_JSON.__name__, 0)
 			return converted_file
 		else:
 			self.logger.log("File couldn't be read", 400, Danfe.to_JSON.__name__, -1)
@@ -86,7 +85,7 @@ class Danfe():
 			if not converted_file:
 				self.logger.log("CSV conversion failed", 500, Danfe.to_CSV.__name__, -1)
 				return None
-			self.logger.log(converted_file, 0, Danfe.to_CSV.__name__, 0)
+			self.logger.log("CSV Conversion successful", 0, Danfe.to_CSV.__name__, 0)
 			return converted_file
 		else:
 			self.logger.log("File couldn't be read", 400, Danfe.to_CSV.__name__, -1)

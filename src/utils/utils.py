@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-import os, subprocess
+import os, subprocess, json
 
 class ErrorHandler(Exception):
     def __init__(self, code, *args):
@@ -23,6 +23,13 @@ class ErrorHandler(Exception):
 
     def __str__(self):
         return ('Error: %s\n:' % self.code) + str(self.args)
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+       if isinstance(obj, set):
+          return list(obj)
+       return json.JSONEncoder.default(self, obj)
 
 class Save():
     def __init__(self, result, location, convert_to, logger):
